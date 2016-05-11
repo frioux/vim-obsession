@@ -61,12 +61,14 @@ function! s:persist() abort
   if exists('g:this_obsession')
     try
       set sessionoptions-=blank sessionoptions-=options sessionoptions+=tabpages
-      execute 'mksession! '.fnameescape(g:this_obsession)
-      let body = readfile(g:this_obsession)
+      let tmp = g:this_obsession . &backupext
+      execute 'mksession! '.fnameescape(tmp)
+      let body = readfile(tmp)
       call insert(body, 'let g:this_session = v:this_session', -3)
       call insert(body, 'let g:this_obsession = v:this_session', -3)
       call insert(body, 'let g:this_obsession_status = 2', -3)
-      call writefile(body, g:this_obsession)
+      call writefile(body, tmp)
+      call rename(tmp, g:this_obsession)
       let g:this_session = g:this_obsession
     catch
       unlet g:this_obsession
